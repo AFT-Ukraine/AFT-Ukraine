@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFT-Ukraine | Економія до 30% на пальне</title>
+    <meta name="description" content="Миттєві талони на пальне (А-95, ДП, Газ) зі знижкою 30%. Діють у найбільших мережах АЗС України: OKKO, WOG, SOCAR, UPG та інших. Заощаджуйте на кожному літрі!">
+    <meta name="keywords" content="талони на пальне, знижки на бензин, купити талони на пальне, паливні картки, дешевий бензин україна">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23FF7A00%22></rect><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2260%22 font-weight=%22bold%22 fill=%22white%22>A</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #005BEA;
+            --secondary-orange: #FF7A00;
+            --dark-bg: #121212;
+            --card-bg: #1E1E1E;
+            --light-text: #FFFFFF;
+            --gray-text: #B3B3B3;
+            --green: #28a745;
+            --red: #d90429;
+            --star-color: #FFC700;
+            --animation-speed: 0.3s;
+        }
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            overflow-x: hidden;
+        }
+        /* --- Preloader & Animation --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--dark-bg); z-index: 10000;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #preloader.hidden { opacity: 0; visibility: hidden; }
+        .loader-text { font-size: 24px; font-weight: bold; }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            width: 36px; height: 36px; border-radius: 50%;
+            border-left-color: var(--primary-blue); margin-top: 20px;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .animated-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animated-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- General Styles --- */
+        .container { max-width: 900px; margin: auto; padding: 0 20px; }
+        section { padding: 80px 0; }
+        h1, h2 { font-weight: 900; text-align: center; }
+        h1 { font-size: 3.2em; color: var(--light-text); }
+        h2 { font-size: 2.5em; margin-bottom: 50px; }
+        h3 { font-weight: 700; font-size: 1.4em; }
+        h4 { font-weight: 700; margin: 0; font-size: 1.1em;}
+        .highlight { color: var(--secondary-orange); }
+
+        /* --- Header & Logo --- */
+        .site-header {
+            padding-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .logo .talon {
+            width: 50px;
+            height: 30px;
+            background: var(--card-bg);
+            border: 2px solid var(--gray-text);
+            border-radius: 4px;
+            position: relative;
+        }
+        .logo .talon:nth-child(1) { transform: rotate(-15deg); z-index: 1; }
+        .logo .talon:nth-child(2) { transform: translateY(-5px); z-index: 2; }
+        .logo .talon:nth-child(3) { transform: rotate(15deg); z-index: 1; }
+        .logo .talon::before {
+            content: 'A-95';
+            position: absolute;
+            font-size: 8px;
+            font-weight: 900;
+            color: var(--secondary-orange);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- Timer & Total Saved Counter --- */
+        .promo-timer {
+            background-color: var(--secondary-orange);
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-weight: 700;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .promo-timer-text { font-size: 1.1em; }
+        #countdown { font-size: 1.5em; letter-spacing: 3px; }
+        
+        .stats-section {
+            background-color: #000;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .stats-counter {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--green);
+        }
+
+        /* --- Hero Section --- */
+        .hero { text-align: center; padding-top: 20px; padding-bottom: 60px; }
+        .hero p { font-size: 1.2em; color: var(--gray-text); max-width: 600px; margin: 20px auto 40px auto; }
+        .cta-button {
+            display: inline-block; background: linear-gradient(90deg, var(--secondary-orange), #FF5F00);
+            color: #fff; padding: 18px 40px; text-decoration: none; border-radius: 50px;
+            font-size: 1.2em; font-weight: 700; transition: all var(--animation-speed);
+            box-shadow: 0 10px 25px rgba(255, 122, 0, 0.25);
+            border: none;
+            width: 100%;
+            box-sizing: border-box; 
+        }
+        .cta-button:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.4); }
+
+        /* --- Calculator Section --- */
+        .calculator { background: var(--card-bg); border-radius: 20px; padding: 40px; }
+        .calculator-layout { display: flex; gap: 20px; flex-wrap: wrap; }
+        .calculator-main { flex: 2; min-width: 300px; }
+        .fuel-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .fuel-tab {
+            padding: 12px 25px; border: 2px solid #333; border-radius: 50px;
+            cursor: pointer; font-weight: 700; transition: all var(--animation-speed);
+        }
+        .fuel-tab:hover { background-color: #2a2a2a; }
+        .fuel-tab.active { background-color: var(--primary-blue); border-color: var(--primary-blue); color: #fff; }
+
+        .fuel-content { display: none; }
+        .fuel-content.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .price-info { display: flex; justify-content: space-around; text-align: center; margin-bottom: 30px; }
+        .price-info .price { font-size: 2em; font-weight: 900; }
+        .price-info .old-price { text-decoration: line-through; color: var(--gray-text); }
+        .price-info .new-price { color: var(--green); }
+        
+        .slider-container, .buttons-container { margin-bottom: 20px; }
+        .volume-slider { width: 100%; cursor: pointer; -webkit-appearance: none; appearance: none; height: 8px; background: #444; border-radius: 5px; outline: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; background: var(--secondary-orange); border-radius: 50%; cursor: pointer; }
+        .volume-slider::-moz-range-thumb { width: 24px; height: 24px; background: var(--secondary-orange); border-radius: 50%; cursor: pointer; }
+        .current-volume-display { text-align: center; font-size: 1.5em; font-weight: 700; margin-bottom: 30px; }
+        .current-volume-display .volume-value { color: var(--secondary-orange); }
+        
+        .volume-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .volume-button {
+            padding: 10px 15px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            background: none;
+            color: var(--light-text);
+            transition: all var(--animation-speed);
+        }
+        .volume-button:hover { background-color: #2a2a2a; }
+        .volume-button.active { background-color: var(--secondary-orange); border-color: var(--secondary-orange); color: #fff; }
+
+        /* --- Test Tube Animation --- */
+        .test-tube-visuals {
+            flex: 1;
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .test-tube-wrapper {
+            position: relative;
+            width: 50px;
+            height: 100%;
+            min-height: 400px;
+        }
+        .test-tube {
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--gray-text);
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+        }
+        .liquid-wrapper {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background-color: var(--primary-blue);
+            transition: height 0.2s ease-out, background-color var(--animation-speed);
+        }
+        .liquid-wrapper.decreasing {
+            background-color: var(--red);
+        }
+
+        .test-tube-markings {
+            position: absolute;
+            top: 0;
+            right: 100%;
+            height: 100%;
+            width: 40px;
+            margin-right: 10px;
+        }
+        .marking {
+            position: absolute;
+            right: 0;
+            width: 15px;
+            height: 2px;
+            background: var(--gray-text);
+        }
+        .marking-label {
+            position: absolute;
+            right: 20px;
+            transform: translateY(-50%);
+            color: var(--gray-text);
+            font-size: 0.9em;
+        }
+
+
+        /* --- Summary --- */
+        .summary { background: var(--dark-bg); border-radius: 15px; padding: 25px; text-align: center; }
+        .summary .total, .summary .savings { font-size: 1.8em; font-weight: 900; margin: 10px 0; }
+        .summary .savings { color: var(--green); }
+        .summary .buy-button-wrapper { margin-top: 20px; }
+        .scarcity-counter {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: var(--secondary-orange);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* --- Other sections --- */
+        .card { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .card .icon { font-size: 2.5em; margin-bottom: 15px; display: block; }
+        .card-content { overflow: hidden; }
+        .b2b-section { background: linear-gradient(rgba(0, 91, 234, 0.1), rgba(0, 91, 234, 0)); }
+        #stations { background-color: #000; }
+        .stations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 20px; text-align: center; }
+        .station-logo { font-size: 1.2em; font-weight: 900; padding: 15px 10px; border-radius: 10px; background: var(--card-bg); }
+        
+        /* --- Trusted By --- */
+        .trusted-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            align-items: center;
+        }
+        .partner-logo {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 900;
+            color: var(--gray-text);
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .partner-logo:hover {
+            opacity: 1;
+        }
+
+
+        /* --- Reviews --- */
+        .review-card { padding: 20px; text-align: left;}
+        .review-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .review-photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #333; }
+        .review-author { flex-grow: 1; }
+        .review-stars { display: flex; gap: 3px; color: var(--star-color); }
+        .review-stars svg { width: 18px; height: 18px; }
+        .review-text { max-height: 65px; overflow: hidden; position: relative; transition: max-height 0.4s ease-out; }
+        .review-text.expanded { max-height: 500px; }
+        .review-text.expandable::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(transparent, var(--card-bg));
+        }
+        .review-text.expanded::after { display: none; }
+        .read-more-btn { color: var(--secondary-orange); cursor: pointer; font-weight: 700; margin-top: 10px; display: inline-block; }
+
+        /* --- Video Review --- */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Aspect Ratio 16:9 */
+            height: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            background-color: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Free Talon Section --- */
+        #free-talon-section {
+            background: linear-gradient(45deg, var(--secondary-orange), var(--primary-blue));
+            padding: 60px 20px;
+        }
+        .free-talon-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 600px;
+            margin: auto;
+        }
+        .free-talon-box h2 {
+            color: var(--light-text);
+        }
+        .free-talon-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .free-talon-input {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 1.1em;
+            background: var(--dark-bg);
+            border: 2px solid var(--gray-text);
+            border-radius: 10px;
+            color: var(--light-text);
+            font-weight: 700;
+            min-width: 200px;
+        }
+        .free-talon-button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            flex-grow: 1;
+            width: auto;
+        }
+
+        /* --- FAQ --- */
+        .faq-item { background: var(--card-bg); margin-bottom: 10px; border-radius: 10px; }
+        .faq-question { padding: 20px; font-weight: 700; cursor: pointer; position: relative; display: flex; justify-content: space-between; align-items: center; }
+        .faq-question::after { content: '+'; font-size: 1.5em; transition: transform 0.3s; }
+        .faq-item.active .faq-question::after { transform: rotate(45deg); }
+        .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; color: var(--gray-text); }
+        .faq-item.active .faq-answer { padding-bottom: 20px; max-height: 200px; }
+
+        /* --- Chat Button --- */
+        #chat-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 999;
+        }
+        #chat-button {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background: var(--secondary-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        #chat-button:hover { transform: scale(1.1); }
+        #chat-button svg { width: 32px; height: 32px; fill: #fff; }
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 24px;
+            height: 24px;
+            background-color: var(--red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .chat-badge.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        #chat-notification {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 240px;
+            background: var(--light-text);
+            color: var(--dark-bg);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+        #chat-notification.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #chat-notification p { margin: 0 0 15px 0; font-weight: 700; font-size: 0.9em; }
+        .chat-cta {
+            display: block;
+            text-align: center;
+            padding: 8px 12px;
+            background: linear-gradient(90deg, var(--secondary-orange), #FF5F00);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+
+        /* --- Exit Intent Popup --- */
+        #exit-popup-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); z-index: 9998;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity var(--animation-speed) ease;
+        }
+        #exit-popup-overlay.visible { display: flex; opacity: 1; }
+        #exit-popup {
+            background: var(--card-bg); padding: 40px; border-radius: 15px;
+            text-align: center; max-width: 500px; position: relative;
+            transform: scale(0.9); transition: transform var(--animation-speed) ease;
+        }
+        #exit-popup-overlay.visible #exit-popup { transform: scale(1); }
+        #exit-popup h2 { font-size: 2em; }
+        #exit-popup p { color: var(--gray-text); }
+        #close-popup { position: absolute; top: 15px; right: 15px; font-size: 2em; cursor: pointer; line-height: 1; }
+        .popup-cta { margin-top: 20px; }
+
+        footer { text-align: center; padding: 40px 20px; background: #000; color: var(--gray-text); }
+        .footer-contacts { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px; font-size: 1.1em;}
+        .footer-links { margin-bottom: 20px; }
+        .footer-links a { margin: 0 15px; color: var(--gray-text); text-decoration: none; }
+        .footer-links a:hover { color: var(--light-text); }
+        .disclaimer { font-size: 0.9em; max-width: 700px; margin: 0 auto; color: #888; }
+        
+        /* --- Mobile Optimization --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 2em; }
+            .calculator-layout {
+                flex-direction: column;
+            }
+            .test-tube-visuals {
+                order: -1; /* Move test tube to the top on mobile */
+                width: 100%;
+                flex: auto;
+                margin-bottom: 30px;
+                height: 150px;
+            }
+            .test-tube {
+                width: 60px;
+                min-height: auto;
+                height: 100%;
+            }
+            .calculator-main {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-text">⛽ Завантаження вигідних пропозицій...</div>
+        <div class="spinner"></div>
+    </div>
+    
+    <header class="promo-timer">
+        <span class="promo-timer-text">Ваша персональна знижка діє ще:</span>
+        <div id="countdown">01:00:00</div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="site-header">
+                <div class="logo">
+                    <div class="talon"></div>
+                    <div class="talon"></div>
+                    <div class="talon"></div>
+                </div>
+                <h1>AFT-Ukraine</h1>
+            </div>
+            <div class="container">
+                <p>Економте до <span class="highlight">30%</span> на кожному літрі пального. Купуйте паливні талони онлайн та заправляйтесь на будь-якій популярній АЗС України значно дешевше.</p>
+            </div>
+        </section>
+        
+        <section class="stats-section animated-section">
+            <div class="container">
+                <h3>Наші клієнти вже заощадили:</h3>
+                <div id="saved-counter" class="stats-counter" data-target="1453280">0 грн</div>
+            </div>
+        </section>
+
+        <section id="calculator" class="calculator">
+            <div class="container">
+                 <div class="calculator-layout">
+                     <div class="test-tube-visuals">
+                        <div class="test-tube-wrapper">
+                            <div class="test-tube">
+                                <div class="liquid-wrapper"></div>
+                            </div>
+                            <div class="test-tube-markings"></div>
+                        </div>
+                    </div>
+                    <div class="calculator-main">
+                        <div class="fuel-tabs">
+                            <div class="fuel-tab active" data-fuel="a95">А-95</div>
+                            <div class="fuel-tab" data-fuel="dp">ДП</div>
+                            <div class="fuel-tab" data-fuel="gas">Газ</div>
+                            <div class="fuel-tab" data-fuel="a95plus">A-95+</div>
+                        </div>
+                        <div class="fuel-content active" data-fuel-type="a95"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">56.00 грн/л</div></div><div>Наша ціна<div class="price new-price">39.20 грн/л</div></div></div><form class="fuel-form" data-price="39.20"><div class="slider-container"><input type="range" min="10" max="300" value="100" step="1" class="volume-slider"></div><div class="current-volume-display">Обрано: <span class="volume-value">100</span> л</div></form></div>
+                        <div class="fuel-content" data-fuel-type="dp"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">54.00 грн/л</div></div><div>Наша ціна<div class="price new-price">37.80 грн/л</div></div></div><form class="fuel-form" data-price="37.80"><div class="slider-container"><input type="range" min="10" max="300" value="100" step="1" class="volume-slider"></div><div class="current-volume-display">Обрано: <span class="volume-value">100</span> л</div></form></div>
+                        <div class="fuel-content" data-fuel-type="gas"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">27.00 грн/л</div></div><div>Наша ціна<div class="price new-price">18.90 грн/л</div></div></div><form class="fuel-form" data-price="18.90"><div class="slider-container"><input type="range" min="10" max="300" value="100" step="1" class="volume-slider"></div><div class="current-volume-display">Обрано: <span class="volume-value">100</span> л</div></form></div>
+                        <div class="fuel-content" data-fuel-type="a95plus"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">60.00 грн/л</div></div><div>Наша ціна<div class="price new-price">42.00 грн/л</div></div></div><form class="fuel-form" data-price="42.00"><div class="slider-container"><input type="range" min="10" max="300" value="100" step="1" class="volume-slider"></div><div class="current-volume-display">Обрано: <span class="volume-value">100</span> л</div></form></div>
+                        <div class="summary">
+                            <div>До сплати:</div>
+                            <div class="total">...</div>
+                            <div>Ваша економія:</div>
+                            <div class="savings">...</div>
+                            <div class="scarcity-counter"></div>
+                            <div class="buy-button-wrapper">
+                                <a href="#!" class="cta-button">Отримати талон</a>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+        
+        <section id="reviews" class="animated-section">
+            <div class="container">
+                <h2>Що кажуть наші клієнти</h2>
+                <div class="grid-3">
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/FF7A00/FFFFFF?text=О" alt="Фото Олексія" class="review-photo"><div class="review-author"><h4>Олексій, м. Київ</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Дуже зручно, талон прийшов миттєво в Telegram. Вже заощадив 500 грн на першій же покупці! Раніше користувався іншими сервісами, але тут найкращі умови та найпростіший інтерфейс. Буду рекомендувати всім друзям та колегам.</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/005BEA/FFFFFF?text=І" alt="Фото Ірини" class="review-photo"><div class="review-author"><h4>Ірина, м. Львів</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Спочатку вагалась, але все виявилось прозоро. Заправилась на WOG без жодних проблем. Буду користуватись ще.</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/28a745/FFFFFF?text=В" alt="Фото Віктора" class="review-photo"><div class="review-author"><h4>Віктор, власник служби доставки</h4><div class="review-stars" data-rating="4"></div></div></div><div class="review-text expandable"><p>Найкращий сервіс для ФОП! Спростили нам закупівлю пального для кур'єрів, плюс економія суттєва. Радує наявність документів для бухгалтерії, це великий плюс для бізнесу.</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/9C27B0/FFFFFF?text=Н" alt="Фото Наталії" class="review-photo"><div class="review-author"><h4>Наталія, м. Одеса</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Все чудово! Купувала талони на ДП, заправилась на ОККО без проблем. Дякую за економію сімейного бюджету!</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/E91E63/FFFFFF?text=С" alt="Фото Сергія" class="review-photo"><div class="review-author"><h4>Сергій, м. Дніпро</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Дуже швидка підтримка. Було питання щодо оплати, відповіли впродовж хвилини. Сервіс на висоті.</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/607D8B/FFFFFF?text=Ю" alt="Фото Юлії" class="review-photo"><div class="review-author"><h4>Юлія, м. Харків</h4><div class="review-stars" data-rating="4"></div></div></div><div class="review-text expandable"><p>Користуюсь вже третій місяць. Стабільно, надійно. Хотілося б ще додаток на телефон для більшої зручності.</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/4CAF50/FFFFFF?text=Т" alt="Фото Тараса" class="review-photo"><div class="review-author"><h4>Тарас, м. Вінниця</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Просто, зрозуміло, вигідно. Що ще треба? Дякую!</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/FF5722/FFFFFF?text=А" alt="Фото Анни" class="review-photo"><div class="review-author"><h4>Анна, м. Запоріжжя</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Реальна економія. Заправила повний бак і зберегла майже 400 гривень. Неймовірно!</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                    <div class="card review-card"><div class="review-header"><img src="https://placehold.co/60x60/03A9F4/FFFFFF?text=М" alt="Фото Максима" class="review-photo"><div class="review-author"><h4>Максим, далекобійник</h4><div class="review-stars" data-rating="5"></div></div></div><div class="review-text expandable"><p>Для моєї роботи це знахідка. Купую талони на дизель великими партіями. За місяць економлю тисячі гривень. Дуже задоволений.</p></div><span class="read-more-btn">Читати повністю...</span></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="simple-step" class="animated-section">
+            <div class="container">
+                <div id="calculator-clone" class="calculator">
+                     <!-- This will be populated by script -->
+                </div>
+            </div>
+        </section>
+        
+        <section id="video-review" class="animated-section">
+            <div class="container">
+                <h2>Подивіться, як це просто!</h2>
+                <div class="video-container">
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/jwLygcmMsnA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+        
+        <section id="free-talon-section" class="animated-section">
+             <div class="container">
+                <div class="free-talon-box">
+                    <h2>🎁 Отримай 1 талон безкоштовно на 20 літрів!</h2>
+                    <p>Спробуйте наш сервіс абсолютно безкоштовно. Вкажіть ваш номер телефону, і ми надішлемо вам промо-талон на 20 літрів пального А-95.</p>
+                    <div class="free-talon-form">
+                        <input type="tel" class="free-talon-input" placeholder="Ваш номер телефону">
+                        <a href="#!" class="cta-button free-talon-button">Отримати</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="animated-section" style="padding-top:0;"><div class="container"><h2>Про нашу компанію</h2><p style="text-align: center; max-width: 700px; margin: -20px auto 40px;">Ми успішно працюємо вже 2 роки, надаючи водіям можливість заощаджувати на заправці без компромісів у якості та зручності. Наша місія — зробити пальне доступнішим для кожного українця. Ми співпрацюємо напряму з найбільшими постачальниками, щоб гарантувати найкращі ціни та надійність кожної операції.</p></div></section>
+        <section id="b2b" class="b2b-section animated-section"><div class="container"><h2>Для бізнесу та ФОП</h2><p style="text-align: center; max-width: 700px; margin: -20px auto 40px;">Оптимізуйте витрати на пальне для вашого автопарку! Ми пропонуємо спеціальні умови для юридичних осіб та ФОП:</p><div class="grid-3"><div class="card"><span class="icon">📈</span><div class="card-content"><h3>Гнучкі ліміти</h3><p>Купуйте будь-які об'єми пального та керуйте ними через особистий кабінет.</p></div></div><div class="card"><span class="icon">📑</span><div class="card-content"><h3>Прозора звітність</h3><p>Отримуйте повний пакет бухгалтерських документів для вашої звітності.</p></div></div><div class="card"><span class="icon">🤝</span><div class="card-content"><h3>Персональний менеджер</h3><p>Ми закріпимо за вами спеціаліста, що допоможе вирішити будь-які питання.</p></div></div></div></div></section>
+        
+        <section id="trusted-by" class="animated-section">
+            <div class="container">
+                <h2>Нам довіряють</h2>
+                <p style="text-align: center; max-width: 600px; margin: -20px auto 40px;">Ми пишаємося співпрацею з лідерами українського ринку у сферах логістики, таксі та доставки.</p>
+                <div class="trusted-grid">
+                    <div class="partner-logo">Нова Пошта</div>
+                    <div class="partner-logo">Uklon</div>
+                    <div class="partner-logo">Glovo</div>
+                    <div class="partner-logo">Bolt</div>
+                    <div class="partner-logo">Агро-Лідер</div>
+                    <div class="partner-logo">Express Moto</div>
+                    <div class="partner-logo">УкрПошта</div>
+                    <div class="partner-logo">Shark Taxi</div>
+                    <div class="partner-logo">Епіцентр К</div>
+                    <div class="partner-logo">Rozetka</div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="awards" class="animated-section"><div class="container"><h2>Наші нагороди</h2><div class="grid-3"><div class="card" style="text-align: center;"><span class="icon">🏆</span><h3>"Лідер цін 2024"</h3><p>Нагорода від асоціації "Вибір Споживача" за найвигідніші пропозиції на ринку.</p></div><div class="card" style="text-align: center;"><span class="icon">⭐</span><h3>"Зручний сервіс"</h3><p>Відзнака від техно-порталу "Digital Drivers" за інноваційність та юзабіліті платформи.</p></div><div class="card" style="text-align: center;"><span class="icon">🛡️</span><h3>"Гарантія надійності"</h3><p>Підтвердження високого рівня безпеки та захисту транзакцій від "Finance Club UA".</p></div></div></div></section>
+        <section id="articles" class="animated-section"><div class="container"><h2>Корисні статті</h2><div class="grid-3"><div class="card"><h3>Як економити пальне: 5 порад</h3><p>Плавний стиль водіння, правильний тиск в шинах та своєчасне ТО можуть зменшити ваші витрати на 10-15%...</p></div><div class="card"><h3>А-95 чи А-95+?</h3><p>Чи варто переплачувати за "преміум" пальне? Розбираємось, у яких випадках це виправдано, а коли — марна трата грошей.</p></div><div class="card"><h3>Майбутнє паливних карток</h3><p>Цифрові талони та мобільні додатки повністю змінюють підхід до корпоративних закупівель пального. Розповідаємо про тренди.</p></div></div></div></section>
+        <section id="stations" class="animated-section" style="background-color: #000;"><div class="container"><h2>Де можна заправитись?</h2><div class="stations-grid"><div class="station-logo">OKKO</div><div class="station-logo">WOG</div><div class="station-logo">SOCAR</div><div class="station-logo">UPG</div><div class="station-logo">Shell</div><div class="station-logo">KLO</div><div class="station-logo">БРСМ</div><div class="station-logo">Motto</div><div class="station-logo">AMIC</div><div class="station-logo">Chipo</div><div class="station-logo">Neftek</div><div class="station-logo">Авіас</div></div></div></section>
+
+        <footer>
+            <div class="container">
+                <div class="footer-contacts">
+                    <span>📞 Kyivstar: (097) 880-88-81</span>
+                    <span>📞 Vodafone: (095) 880-88-81</span>
+                    <span>📞 Lifecell: (093) 880-88-81</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#!">Публічна оферта</a>
+                </div>
+                <p>&copy; 2025 AFT-Ukraine</p>
+                <p class="disclaimer">
+                   
+                </p>
+            </div>
+        </footer>
+    </main>
+
+    <div id="chat-widget">
+        <div id="chat-notification">
+            <p>Ви можете отримати 1 талон безкоштовно!</p>
+            <a href="#free-talon-section" class="chat-cta">Отримати</a>
+        </div>
+        <a href="#!" id="chat-button">
+            <span class="chat-badge">+1</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
+        </a>
+    </div>
+
+    <div id="exit-popup-overlay">
+        <div id="exit-popup">
+            <div id="close-popup">&times;</div>
+            <h2>Стривайте! ✋</h2>
+            <p>Не пропустіть свою вигоду! Тільки для вас - додаткові <b>+3 літри</b> пального в подарунок при покупці від 100 літрів!</p>
+            <a href="#calculator" class="cta-button popup-cta">Отримати бонус</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            if(preloader) preloader.classList.add('hidden');
+
+            function startTimer(duration, display) {
+                let timer = duration, minutes, seconds, hours;
+                const interval = setInterval(() => {
+                    hours = parseInt(timer / 3600, 10);
+                    minutes = parseInt((timer % 3600) / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+                    hours = hours < 10 ? "0" + hours : hours;
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    display.textContent = `${hours}:${minutes}:${seconds}`;
+                    if (--timer < 0) {
+                        timer = 0;
+                        display.textContent = "Акція завершилась";
+                        clearInterval(interval);
+                    }
+                }, 1000);
+            }
+
+            function startScarcityCounter(initialCount, display) {
+                let count = initialCount;
+                const updateCounter = () => {
+                    if(count > 0) {
+                        display.innerHTML = `🔥 Залишилось на сьогодні: <strong>${count}</strong> талонів`;
+                        count--;
+                    } else {
+                        display.innerHTML = `😥 Талони на сьогодні закінчились!`;
+                        clearInterval(interval);
+                    }
+                };
+                if(display) {
+                    const interval = setInterval(updateCounter, 60000);
+                    updateCounter();
+                }
+            }
+            
+            function initializeCalculator(container) {
+                const tabs = container.querySelectorAll('.fuel-tab');
+                const contents = container.querySelectorAll('.fuel-content');
+                const scarcityCounterEl = container.querySelector('.scarcity-counter');
+                let previousVolume = 0;
+
+                function updateDisplay(controlElement, value) {
+                    const activeContent = container.querySelector('.fuel-content.active');
+                    if (!activeContent) return;
+
+                    const form = activeContent.querySelector('.fuel-form');
+                    const volumeDisplay = activeContent.querySelector('.volume-value');
+                    const totalPriceEl = container.querySelector('.total');
+                    const totalSavingsEl = container.querySelector('.savings');
+                    const liquidWrapper = container.closest('.calculator').querySelector('.liquid-wrapper');
+                    
+                    const price = parseFloat(form.dataset.price);
+                    const oldPrice = parseFloat(activeContent.querySelector('.old-price').textContent);
+                    const volume = parseInt(value);
+                    const slider = activeContent.querySelector('.volume-slider');
+
+                    if (volumeDisplay) volumeDisplay.textContent = volume;
+                    if (slider) slider.value = volume;
+                    
+                    const total = price * volume;
+                    const savings = (oldPrice * volume) - total;
+                    if(totalPriceEl) totalPriceEl.textContent = `${total.toFixed(2)} грн`;
+                    if(totalSavingsEl) totalSavingsEl.textContent = `${savings.toFixed(2)} грн`;
+
+                    const sliderForLimits = slider || { min: 10, max: 300 };
+                    const min = parseInt(sliderForLimits.min);
+                    const max = parseInt(sliderForLimits.max);
+                    const percentage = (volume - min) / (max - min) * 100;
+                    
+                    if (liquidWrapper) {
+                        liquidWrapper.style.height = `${percentage}%`;
+                        liquidWrapper.classList.remove('decreasing');
+                        if (volume < previousVolume) liquidWrapper.classList.add('decreasing');
+                    }
+                    previousVolume = volume;
+                }
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        contents.forEach(content => content.classList.remove('active'));
+                        
+                        const fuelType = tab.dataset.fuel;
+                        const targetContent = container.querySelector(`[data-fuel-type="${fuelType}"]`);
+                        
+                        if (targetContent) {
+                            targetContent.classList.add('active');
+                            const activeControl = targetContent.querySelector('.volume-slider') || targetContent.querySelector('.volume-button.active');
+                            previousVolume = parseInt(activeControl.value || activeControl.dataset.value);
+                            updateDisplay(activeControl, previousVolume);
+                        }
+                    });
+                });
+
+                container.querySelectorAll('.volume-slider').forEach(slider => {
+                    slider.addEventListener('input', () => updateDisplay(slider, slider.value));
+                });
+                
+                container.querySelectorAll('.volume-button').forEach(button => {
+                   button.addEventListener('click', () => {
+                       const parentForm = button.closest('.fuel-form');
+                       parentForm.querySelectorAll('.volume-button').forEach(b => b.classList.remove('active'));
+                       button.classList.add('active');
+                       updateDisplay(button, button.dataset.value);
+                   });
+                });
+
+                const initialControl = container.querySelector('.fuel-content.active .volume-slider') || container.querySelector('.fuel-content.active .volume-button.active');
+                if (initialControl) {
+                    previousVolume = parseInt(initialControl.value || initialControl.dataset.value);
+                    updateDisplay(initialControl, previousVolume);
+                }
+
+                if(scarcityCounterEl) startScarcityCounter(17, scarcityCounterEl);
+            }
+            
+            const mainCalculatorEl = document.getElementById('calculator');
+            if (mainCalculatorEl) initializeCalculator(mainCalculatorEl);
+
+            const cloneCalculatorContainer = document.getElementById('calculator-clone');
+            if(cloneCalculatorContainer) {
+                 const calculatorHTML = `
+                    <div class="calculator-layout">
+                        <div class="calculator-main">
+                        <div class="fuel-tabs">
+                            <div class="fuel-tab active" data-fuel="a95">А-95</div>
+                            <div class="fuel-tab" data-fuel="dp">ДП</div>
+                            <div class="fuel-tab" data-fuel="gas">Газ</div>
+                            <div class="fuel-tab" data-fuel="a95plus">A-95+</div>
+                        </div>
+                        <div class="fuel-content active" data-fuel-type="a95"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">56.00 грн/л</div></div><div>Наша ціна<div class="price new-price">39.20 грн/л</div></div></div><form class="fuel-form" data-price="39.20"><div class="buttons-container"><div class="volume-buttons"><button type="button" class="volume-button active" data-value="10">10л</button><button type="button" class="volume-button" data-value="15">15л</button><button type="button" class="volume-button" data-value="25">25л</button><button type="button" class="volume-button" data-value="45">45л</button><button type="button" class="volume-button" data-value="60">60л</button><button type="button" class="volume-button" data-value="100">100л</button><button type="button" class="volume-button" data-value="150">150л</button></div></div></form></div>
+                        <div class="fuel-content" data-fuel-type="dp"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">54.00 грн/л</div></div><div>Наша ціна<div class="price new-price">37.80 грн/л</div></div></div><form class="fuel-form" data-price="37.80"><div class="buttons-container"><div class="volume-buttons"><button type="button" class="volume-button active" data-value="10">10л</button><button type="button" class="volume-button" data-value="15">15л</button><button type="button" class="volume-button" data-value="25">25л</button><button type="button" class="volume-button" data-value="45">45л</button><button type="button" class="volume-button" data-value="60">60л</button><button type="button" class="volume-button" data-value="100">100л</button><button type="button" class="volume-button" data-value="150">150л</button></div></div></form></div>
+                        <div class="fuel-content" data-fuel-type="gas"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">27.00 грн/л</div></div><div>Наша ціна<div class="price new-price">18.90 грн/л</div></div></div><form class="fuel-form" data-price="18.90"><div class="buttons-container"><div class="volume-buttons"><button type="button" class="volume-button active" data-value="10">10л</button><button type="button" class="volume-button" data-value="15">15л</button><button type="button" class="volume-button" data-value="25">25л</button><button type="button" class="volume-button" data-value="45">45л</button><button type="button" class="volume-button" data-value="60">60л</button><button type="button" class="volume-button" data-value="100">100л</button><button type="button" class="volume-button" data-value="150">150л</button></div></div></form></div>
+                        <div class="fuel-content" data-fuel-type="a95plus"><div class="price-info"><div>Ціна на АЗС<div class="price old-price">60.00 грн/л</div></div><div>Наша ціна<div class="price new-price">42.00 грн/л</div></div></div><form class="fuel-form" data-price="42.00"><div class="buttons-container"><div class="volume-buttons"><button type="button" class="volume-button active" data-value="10">10л</button><button type="button" class="volume-button" data-value="15">15л</button><button type="button" class="volume-button" data-value="25">25л</button><button type="button" class="volume-button" data-value="45">45л</button><button type="button" class="volume-button" data-value="60">60л</button><button type="button" class="volume-button" data-value="100">100л</button><button type="button" class="volume-button" data-value="150">150л</button></div></div></form></div>
+                        <div class="summary">
+                            <div>До сплати:</div>
+                            <div class="total">...</div>
+                            <div>Ваша економія:</div>
+                            <div class="savings">...</div>
+                            <div class="scarcity-counter"></div>
+                            <div class="buy-button-wrapper">
+                                <a href="#!" class="cta-button">Отримати талон</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>`;
+                 cloneCalculatorContainer.innerHTML = calculatorHTML;
+                 initializeCalculator(cloneCalculatorContainer);
+            }
+
+            const animatedSections = document.querySelectorAll('.animated-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        const counter = entry.target.querySelector('#saved-counter');
+                        if (counter && !counter.classList.contains('counted')) {
+                            animateCounter(counter);
+                            counter.classList.add('counted');
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+            animatedSections.forEach(section => observer.observe(section));
+
+            function animateCounter(el) {
+                let current = 0;
+                const target = +el.dataset.target;
+                const initialIncrement = target / 200; 
+                
+                const initialAnimation = () => {
+                    current += initialIncrement;
+                    if (current < target) {
+                        el.innerText = `${Math.ceil(current).toLocaleString('uk-UA')} грн`;
+                        requestAnimationFrame(initialAnimation);
+                    } else {
+                        current = target;
+                        el.innerText = `${target.toLocaleString('uk-UA')} грн`;
+                        setInterval(() => {
+                            current += Math.random() * 10;
+                            el.innerText = `${Math.floor(current).toLocaleString('uk-UA')} грн`;
+                        }, 2500);
+                    }
+                };
+                initialAnimation();
+            }
+
+            document.querySelectorAll('.read-more-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const reviewText = e.target.previousElementSibling;
+                    reviewText.classList.toggle('expanded');
+                    e.target.textContent = reviewText.classList.contains('expanded') ? 'Згорнути' : 'Читати повністю...';
+                });
+            });
+            
+            document.querySelectorAll('.review-stars').forEach(starsContainer => {
+                const rating = parseInt(starsContainer.dataset.rating) || 0;
+                const starSVG = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>`;
+                let starsHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    starsHTML += `<span style="opacity: ${i < rating ? 1 : 0.3}">${starSVG}</span>`;
+                }
+                starsContainer.innerHTML = starsHTML;
+            });
+
+            document.querySelectorAll('.faq-question').forEach(item => {
+                item.addEventListener('click', () => {
+                    item.parentElement.classList.toggle('active');
+                });
+            });
+
+            const popup = document.getElementById('exit-popup-overlay');
+            const closePopup = document.getElementById('close-popup');
+            const popupCta = document.querySelector('.popup-cta');
+            
+            document.addEventListener('mouseleave', e => {
+                if (e.clientY <= 0 && !sessionStorage.getItem('popup-shown')) {
+                    if(popup) {
+                        popup.classList.add('visible');
+                        sessionStorage.setItem('popup-shown', 'true');
+                    }
+                }
+            });
+            if(closePopup) closePopup.addEventListener('click', () => popup.classList.remove('visible'));
+            if(popupCta) popupCta.addEventListener('click', () => popup.classList.remove('visible'));
+            if(popup) popup.addEventListener('click', (e) => {
+                if (e.target.id === 'exit-popup-overlay') {
+                    popup.classList.remove('visible');
+                }
+            });
+            
+            // --- Chat Notification ---
+            const chatNotification = document.getElementById('chat-notification');
+            const chatButton = document.getElementById('chat-button');
+            const chatCta = document.querySelector('.chat-cta');
+            const chatBadge = document.querySelector('.chat-badge');
+
+            if(chatNotification && chatButton) {
+                setTimeout(() => {
+                    chatNotification.classList.add('visible');
+                    if(chatBadge) chatBadge.classList.add('visible');
+                }, 15000);
+
+                const hideNotification = () => {
+                    chatNotification.classList.remove('visible');
+                     if(chatBadge) chatBadge.classList.remove('visible');
+                };
+
+                chatButton.addEventListener('click', hideNotification);
+                if(chatCta) chatCta.addEventListener('click', hideNotification);
+            }
+
+            const oneHour = 60 * 60;
+            const countdownDisplay = document.querySelector('#countdown');
+            if(countdownDisplay) startTimer(oneHour, countdownDisplay);
+            
+            document.querySelectorAll('.scarcity-counter').forEach(counter => {
+                startScarcityCounter(17, counter);
+            });
+
+
+            function createTestTubeMarkings() {
+                 const markingsContainers = document.querySelectorAll('.test-tube-markings');
+                 if(!markingsContainers.length) return;
+                 const maxVolume = 300;
+                 const markings = [50, 100, 150, 200, 250, 300];
+                 markingsContainers.forEach(container => {
+                     container.innerHTML = ''; 
+                     markings.forEach(value => {
+                         const percentage = ((value - 10) / (maxVolume - 10)) * 100;
+                         const mark = document.createElement('div');
+                         mark.classList.add('marking');
+                         mark.style.bottom = `${percentage}%`;
+                         const label = document.createElement('div');
+                         label.classList.add('marking-label');
+                         label.style.bottom = `${percentage}%`;
+                         label.textContent = value;
+                         container.appendChild(mark);
+                         container.appendChild(label);
+                     });
+                 });
+            }
+            createTestTubeMarkings();
+        });
+    </script>
+</body>
+</html>
